@@ -2,11 +2,11 @@
 // Main AI Chatbot interface with voice input and chat display
 // Standalone version with mock functionality
 // Dimensions: 320x380px to match ClimateControl component
+// FIXED: Removed duplicate property assignments
 
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Effects
 
 Item {
     id: root
@@ -66,6 +66,10 @@ Item {
                     border.color: "#404040"
                     border.width: 1.5
                     
+                    // FIXED: Removed duplicate scale property
+                    property real buttonScale: 1.0
+                    scale: buttonScale
+                    
                     Text {
                         anchors.centerIn: parent
                         text: "☰"
@@ -74,34 +78,20 @@ Item {
                     }
                     
                     MouseArea {
+                        id: listButtonMouseArea
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
+                        hoverEnabled: true
                         
-                        onPressed: parent.scale = 0.9
-                        onReleased: parent.scale = 1.0
+                        onPressed: listButton.buttonScale = 0.9
+                        onReleased: listButton.buttonScale = 1.0
                         onClicked: {
                             root.showHistory = !root.showHistory
                         }
                     }
                     
-                    Behavior on scale {
+                    Behavior on buttonScale {
                         NumberAnimation { duration: 100 }
-                    }
-                    
-                    // Hover glow effect
-                    layer.enabled: listButtonMouseArea.containsMouse
-                    layer.effect: MultiEffect {
-                        shadowEnabled: true
-                        shadowColor: "#00D9FF"
-                        shadowBlur: 0.6
-                        shadowOpacity: 0.4
-                    }
-                    
-                    MouseArea {
-                        id: listButtonMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        propagateComposedEvents: true
                     }
                 }
                 
@@ -126,6 +116,10 @@ Item {
                     border.color: "#404040"
                     border.width: 1.5
                     
+                    // FIXED: Removed duplicate scale property
+                    property real buttonScale: 1.0
+                    scale: buttonScale
+                    
                     Text {
                         anchors.centerIn: parent
                         text: "×"
@@ -134,34 +128,20 @@ Item {
                     }
                     
                     MouseArea {
+                        id: closeButtonMouseArea
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
+                        hoverEnabled: true
                         
-                        onPressed: parent.scale = 0.9
-                        onReleased: parent.scale = 1.0
+                        onPressed: closeButton.buttonScale = 0.9
+                        onReleased: closeButton.buttonScale = 1.0
                         onClicked: {
                             root.closeRequested()
                         }
                     }
                     
-                    Behavior on scale {
+                    Behavior on buttonScale {
                         NumberAnimation { duration: 100 }
-                    }
-                    
-                    // Hover glow effect
-                    layer.enabled: closeButtonMouseArea.containsMouse
-                    layer.effect: MultiEffect {
-                        shadowEnabled: true
-                        shadowColor: "#FF3B30"
-                        shadowBlur: 0.6
-                        shadowOpacity: 0.4
-                    }
-                    
-                    MouseArea {
-                        id: closeButtonMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        propagateComposedEvents: true
                     }
                 }
             }
@@ -323,6 +303,10 @@ Item {
                         radius: 16
                         color: root.isListening ? "#00D9FF" : "#2A2A2A"
                         
+                        // FIXED: Removed duplicate scale property
+                        property real buttonScale: 1.0
+                        scale: buttonScale
+                        
                         Behavior on color {
                             ColorAnimation { duration: 200 }
                         }
@@ -337,8 +321,8 @@ Item {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
                             
-                            onPressed: parent.scale = 0.9
-                            onReleased: parent.scale = 1.0
+                            onPressed: micButton.buttonScale = 0.9
+                            onReleased: micButton.buttonScale = 1.0
                             onClicked: {
                                 root.isListening = !root.isListening
                                 
@@ -349,25 +333,26 @@ Item {
                             }
                         }
                         
-                        Behavior on scale {
+                        Behavior on buttonScale {
                             NumberAnimation { duration: 100 }
                         }
                         
-                        // Glow effect when listening
-                        layer.enabled: root.isListening
-                        layer.effect: MultiEffect {
-                            shadowEnabled: true
-                            shadowColor: "#00D9FF"
-                            shadowBlur: 1.0
-                            shadowOpacity: 0.8
-                        }
+                        // Pulsing animation when listening - FIXED: Use separate property
+                        property real pulseScale: 1.0
                         
-                        // Pulsing animation when listening
-                        SequentialAnimation on scale {
+                        SequentialAnimation on pulseScale {
                             running: root.isListening
                             loops: Animation.Infinite
                             NumberAnimation { from: 1.0; to: 1.1; duration: 800; easing.type: Easing.InOutQuad }
                             NumberAnimation { from: 1.1; to: 1.0; duration: 800; easing.type: Easing.InOutQuad }
+                        }
+                        
+                        // Apply pulse scale only when listening
+                        transform: Scale {
+                            origin.x: micButton.width / 2
+                            origin.y: micButton.height / 2
+                            xScale: root.isListening ? micButton.pulseScale : 1.0
+                            yScale: root.isListening ? micButton.pulseScale : 1.0
                         }
                     }
                     
@@ -378,6 +363,10 @@ Item {
                         height: 32
                         radius: 16
                         color: textInput.text.length > 0 ? "#00D9FF" : "#2A2A2A"
+                        
+                        // FIXED: Removed duplicate scale property
+                        property real buttonScale: 1.0
+                        scale: buttonScale
                         
                         Behavior on color {
                             ColorAnimation { duration: 200 }
@@ -395,24 +384,15 @@ Item {
                             cursorShape: Qt.PointingHandCursor
                             enabled: textInput.text.length > 0
                             
-                            onPressed: parent.scale = 0.9
-                            onReleased: parent.scale = 1.0
+                            onPressed: sendButton.buttonScale = 0.9
+                            onReleased: sendButton.buttonScale = 1.0
                             onClicked: {
                                 sendMessage()
                             }
                         }
                         
-                        Behavior on scale {
+                        Behavior on buttonScale {
                             NumberAnimation { duration: 100 }
-                        }
-                        
-                        // Glow effect when enabled
-                        layer.enabled: textInput.text.length > 0
-                        layer.effect: MultiEffect {
-                            shadowEnabled: true
-                            shadowColor: "#00D9FF"
-                            shadowBlur: 0.6
-                            shadowOpacity: 0.5
                         }
                     }
                 }
@@ -421,21 +401,26 @@ Item {
     }
     
     // Chat history sidebar (overlay)
-    Rectangle {
-        id: historySidebar
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        width: parent.width
+    Loader {
+        id: historySidebarLoader
+        anchors.fill: parent
+        active: root.showHistory
+        sourceComponent: historySidebarComponent
         
-        visible: root.showHistory
+        // Slide animation
+        Behavior on opacity {
+            NumberAnimation { duration: 300 }
+        }
+        
+        opacity: root.showHistory ? 1.0 : 0.0
+    }
+    
+    Component {
+        id: historySidebarComponent
         
         ChatHistoryList {
-            anchors.fill: parent
-            
             onChatSelected: function(chatId) {
                 console.log("Selected chat:", chatId)
-                // Load chat messages for this chatId
                 root.showHistory = false
             }
             
@@ -445,27 +430,6 @@ Item {
             
             onCloseRequested: {
                 root.showHistory = false
-            }
-        }
-        
-        // Slide animation
-        enter: Transition {
-            NumberAnimation {
-                property: "x"
-                from: root.width
-                to: 0
-                duration: 300
-                easing.type: Easing.OutCubic
-            }
-        }
-        
-        exit: Transition {
-            NumberAnimation {
-                property: "x"
-                from: 0
-                to: root.width
-                duration: 300
-                easing.type: Easing.InCubic
             }
         }
     }
