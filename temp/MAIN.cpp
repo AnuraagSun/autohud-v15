@@ -1,8 +1,7 @@
 /*
 ═══════════════════════════════════════════════════════════════
 FILE: src/main.cpp
-PHASE: Phase 5 - Complete UI Implementation with Correct Imports
-LOCATION: infotainment-os-v15/src/main.cpp
+FIXED: C++17 compatible string literals
 ═══════════════════════════════════════════════════════════════
 */
 
@@ -16,7 +15,9 @@ LOCATION: infotainment-os-v15/src/main.cpp
 int main(int argc, char *argv[])
 {
     // Enable high DPI scaling
-    QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
+    QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
+        Qt::HighDpiScaleFactorRoundingPolicy::PassThrough
+    );
     
     QGuiApplication app(argc, argv);
 
@@ -30,17 +31,24 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    // Add import path for custom components - this matches the RESOURCE_PREFIX from CMake
+    // Add import path for custom components
     engine.addImportPath("qrc:/qt/qml");
 
-    // Load the main.qml file - this path matches the RESOURCE_PREFIX and module structure
-    const QUrl url(u"qrc:/qt/qml/infotainment/qml/main.qml"_s);
-    QObject::connect(&engine, &QQmlApplicationEngine::objectCreationFailed,
-        &app, []() { QCoreApplication::exit(-1); },
-        Qt::QueuedConnection);
+    // Load the main.qml file - FIXED: Use QStringLiteral for C++17 compatibility
+    const QUrl url(QStringLiteral("qrc:/qt/qml/infotainment/qml/main.qml"));
+    
+    QObject::connect(
+        &engine, 
+        &QQmlApplicationEngine::objectCreationFailed,
+        &app, 
+        []() { QCoreApplication::exit(-1); },
+        Qt::QueuedConnection
+    );
+    
     engine.load(url);
 
     if (engine.rootObjects().isEmpty()) {
+        qWarning() << "Failed to load QML file";
         return -1;
     }
 
@@ -50,5 +58,5 @@ int main(int argc, char *argv[])
 /*
 ═══════════════════════════════════════════════════════════════
 END OF FILE: src/main.cpp
-# ════════════════════════════════════════════════════════════════
+═══════════════════════════════════════════════════════════════
 */
